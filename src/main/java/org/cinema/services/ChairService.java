@@ -9,9 +9,20 @@ public class ChairService implements IChairService {
 
     @Override
     public int chairOccuped(String[][] chairsCinema, int numbersChairs) {
-        int indexHalfChair = findFreeChairs(chairsCinema, false);
+        return fillChairs(chairsCinema, numbersChairs, false);
+    }
+    @Override
+    public int chairReserved(String[][] chairsCinema, int numbersChairs) {
+        return fillChairs(chairsCinema, numbersChairs, true);
+    }
+
+    public int fillChairs(String[][] chairsCinema, int numbersChairs, boolean isReserved) {
+        int indexHalfChair = findFreeChairs(chairsCinema, isReserved);
         int half = chairsCinema.length/2;
-        boolean firstChair = chairsCinema[indexHalfChair][indexHalfChair] == null || chairsCinema[indexHalfChair][indexHalfChair].equalsIgnoreCase("R");
+        boolean firstChair = isReserved ?
+                chairsCinema[indexHalfChair][indexHalfChair] == null :
+                chairsCinema[indexHalfChair][indexHalfChair] == null || chairsCinema[indexHalfChair][indexHalfChair].equalsIgnoreCase("R");
+
         int actualIndex = half;
 
         // Por cada num de butacas hace un bucle
@@ -19,7 +30,7 @@ public class ChairService implements IChairService {
             // Si se reservan más que la longitud, vuelve a 0
             if (x == chairsCinema[indexHalfChair].length) {
                 numbersChairs = numbersChairs - x;
-                indexHalfChair = findFreeChairs(chairsCinema, false);
+                indexHalfChair = findFreeChairs(chairsCinema, isReserved);
                 x = 0;
                 actualIndex = half;
                 firstChair = false;
@@ -27,10 +38,15 @@ public class ChairService implements IChairService {
 
             if (firstChair) {
                 // Si ya está ocupado, le sumo numbersChair para seguir en la fila
-                if (chairsCinema[indexHalfChair][actualIndex] == String.valueOf(x+1)) {
+                if (isReserved && chairsCinema[indexHalfChair][actualIndex] == "R" ||
+                        !isReserved && chairsCinema[indexHalfChair][actualIndex] == String.valueOf(x+1)) {
+
                     numbersChairs++;
                 }
-                chairsCinema[indexHalfChair][half] = String.valueOf(x+1);
+
+                chairsCinema[indexHalfChair][actualIndex] = isReserved ?
+                        "R":
+                        String.valueOf(x+1);
                 firstChair = false;
             }
 
@@ -44,8 +60,11 @@ public class ChairService implements IChairService {
 
                 // Si el index está ocupado, suma la cantidad para ocupar la misma fila
                 if (chairsCinema[indexHalfChair][actualIndex] == null ||
-                        chairsCinema[indexHalfChair][actualIndex].equalsIgnoreCase("R") ) {
-                    chairsCinema[indexHalfChair][actualIndex] = String.valueOf(x + 1);
+                        !isReserved && chairsCinema[indexHalfChair][actualIndex].equalsIgnoreCase("R") ) {
+
+                    chairsCinema[indexHalfChair][actualIndex] = isReserved ?
+                            "R":
+                            String.valueOf(x+1);
                 } else {
                     numbersChairs++;
                 }
@@ -53,55 +72,7 @@ public class ChairService implements IChairService {
         }
 
         return getChairsFreeInRow(chairsCinema,indexHalfChair);
-
     }
-    @Override
-    public int chairReserved(String[][] chairsCinema, int numbersChairs) {
-        int indexHalfChair = findFreeChairs(chairsCinema, true);
-        int half = chairsCinema.length/2;
-        boolean firstChair = chairsCinema[indexHalfChair][indexHalfChair] == null;
-        int actualIndex = half;
-
-        // Por cada num de butacas hace un bucle
-        for (int x = 0; x < numbersChairs; x++) {
-            // Si se reservan más que la longitud
-            if (x == chairsCinema[indexHalfChair].length) {
-                numbersChairs = numbersChairs - x;
-                indexHalfChair = findFreeChairs(chairsCinema, true);
-                x = 0;
-                actualIndex = half;
-                firstChair = false;
-            }
-
-            if (firstChair) {
-                if (chairsCinema[indexHalfChair][actualIndex] == "R") {
-                    numbersChairs++;
-                }
-                chairsCinema[indexHalfChair][actualIndex] = "R";
-                firstChair = false;
-            }
-
-            // Comprueba si es par
-            else {
-                if ((x + 1) % 2 == 0) {
-                    actualIndex = actualIndex + x;
-                } else {
-                    actualIndex = actualIndex - x;
-                }
-                // Si el index está reservado, suma la cantidad para ocupar la misma fila
-                if (chairsCinema[indexHalfChair][actualIndex] == null) {
-                    chairsCinema[indexHalfChair][actualIndex] = "R";
-                } else {
-                    numbersChairs++;
-                }
-            }
-        }
-
-        return getChairsFreeInRow(chairsCinema,indexHalfChair);
-
-    }
-
-
 
     public int findFreeChairs(String[][] chairsCinema, boolean isReserved) {
         boolean isLess = true;
