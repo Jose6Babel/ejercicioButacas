@@ -5,6 +5,8 @@ import org.cinema.services.IChairService;
 import org.cinema.services.IPrintMessagesService;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Component
 public class CinemaApp {
 
@@ -24,21 +26,24 @@ public class CinemaApp {
         int optionChoose = 0;
 
         while (optionChoose != 3) {
-            printMessagesService.initMessage();
-            printMessagesService.chairStatus(chairsCinema);
             printMessagesService.menu();
-
-            optionChoose = chairService.menuOption();
+            try {
+                optionChoose = chairService.menuOption(1, 3);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             if (optionChoose != 3) {
-                printMessagesService.numMessage();
-                int numChairs = chairService.chooseNumbers();
-
                 switch (optionChoose) {
                     case 1: //Reservar
-                        printMessagesService.numChairsFree(chairService.chairReserved(chairsCinema, numChairs));
+                        printMessagesService.numMessage();
+                        int numChairs = chairService.chooseNumbers();
+
+                        String[][] chairsReserved = chairService.chairReserved(chairsCinema, numChairs);
+                        printMessagesService.chairStatus(chairsReserved);
+                        confirmOcupped(chairsCinema, numChairs);
                         break;
-                    case 2: //Ocupar
-                        printMessagesService.numChairsFree(chairService.chairOccuped(chairsCinema, numChairs));
+                    case 2: //Estado cine
+                        printMessagesService.chairStatus(chairsCinema);
                         break;
                     default:
                         break;
@@ -46,5 +51,12 @@ public class CinemaApp {
             }
         }
 
+    }
+
+    private void confirmOcupped(String[][] chairsCinema, int numChairs) throws IOException {
+        printMessagesService.chooseReserved();
+        String yesOrNo = chairService.yesOrNoOption();
+        if (yesOrNo.equalsIgnoreCase("s"))
+            chairService.chairOccuped(chairsCinema, numChairs);
     }
 }

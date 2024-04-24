@@ -5,11 +5,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class PrintMessagesService implements IPrintMessagesService {
     @Override
-    public void initMessage() {
-        System.out.println("Estas son las butacas disponibles:");
-    }
-
-    @Override
     public void numMessage() {
         System.out.println("Para cuantas personas?");
     }
@@ -18,8 +13,13 @@ public class PrintMessagesService implements IPrintMessagesService {
     public void menu() {
         System.out.println("Que desea hacer?");
         System.out.println("1.-Reservar butaca\n" +
-                "2.- Ocupar butaca.\n" +
+                "2.- Ver estado del cine.\n" +
                 "3.- Salir.");
+    }
+    @Override
+    public void chooseReserved() {
+        System.out.println("Los quiere ocupar?");
+        System.out.println("s/n");
     }
 
     @Override

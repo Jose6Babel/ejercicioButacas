@@ -1,11 +1,11 @@
 package org.cinema.services;
 
 public interface IPrintMessagesService {
-    void initMessage();
-
     void numMessage();
 
     void menu();
+
+    void chooseReserved();
 
     void chairStatus(String[][] chairsMovie);
 

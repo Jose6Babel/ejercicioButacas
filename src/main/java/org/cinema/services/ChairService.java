@@ -3,17 +3,26 @@ package org.cinema.services;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Service
 public class ChairService implements IChairService {
 
+    int rows = 9;
+    int columns = 10;
+
     @Override
-    public int chairOccuped(String[][] chairsCinema, int numbersChairs) {
-        return fillChairs(chairsCinema, numbersChairs, false);
+    public void chairOccuped(String[][] chairsCinema, int numbersChairs) {
+        fillChairs(chairsCinema, numbersChairs, false);
     }
     @Override
-    public int chairReserved(String[][] chairsCinema, int numbersChairs) {
-        return fillChairs(chairsCinema, numbersChairs, true);
+    public String[][] chairReserved(String[][] chairsCinema, int numbersChairs) {
+        String[][] chairsReserved;
+        chairsReserved = Arrays.stream(chairsCinema).collect(Collectors.toList()).toArray(new String[rows][columns]);
+
+        fillChairs(chairsReserved, numbersChairs, true);
+        return chairsReserved;
     }
 
     public int fillChairs(String[][] chairsCinema, int numbersChairs, boolean isReserved) {
@@ -105,7 +114,7 @@ public class ChairService implements IChairService {
 
     @Override
     public String[][] chairInit() {
-        String[][] chairsCinema = new String[9][10];
+        String[][] chairsCinema = new String[rows][columns];
         getChairsByFile("chairs", chairsCinema);
 
         return chairsCinema;
@@ -158,15 +167,15 @@ public class ChairService implements IChairService {
     }
 
     @Override
-    public int menuOption() throws IOException {
+    public int menuOption(int minOption, int maxOption) throws IOException {
         int numMenuChoose = 0;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        while (numMenuChoose < 1 || numMenuChoose > 3) {
+        while (numMenuChoose < minOption || numMenuChoose > maxOption) {
             String printMenu = br.readLine();
             try {
                 numMenuChoose = Integer.parseInt(printMenu);
-                if (numMenuChoose < 1 || numMenuChoose > 3) {
+                if (numMenuChoose < minOption || numMenuChoose > maxOption) {
                     System.err.println("Error, introduzca un numero valido");
                 }
             } catch (NumberFormatException error) {
@@ -174,8 +183,29 @@ public class ChairService implements IChairService {
             }
         }
         return numMenuChoose;
-
     }
+
+    @Override
+    public String yesOrNoOption() throws IOException {
+        String optionChoose = "";
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        while (optionChoose.equalsIgnoreCase("")) {
+            String printMenu = br.readLine();
+            try {
+                optionChoose = printMenu;
+                if (optionChoose.equalsIgnoreCase("s") ||
+                        optionChoose.equalsIgnoreCase("n")) {
+                    return optionChoose;
+                } else {
+                    System.err.println("Error, escriba solo 's' o 'n'");
+                    optionChoose = "";
+                }
+            } catch (Exception e) {}
+        }
+        return "";
+    }
+
     @Override
     public int chooseNumbers() throws IOException {
         int numChoose = 0;
