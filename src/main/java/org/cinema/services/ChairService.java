@@ -1,5 +1,6 @@
 package org.cinema.services;
 
+import org.cinema.repositories.IChairRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -9,6 +10,11 @@ public class ChairService implements IChairService {
 
     int rows = 9;
     int columns = 10;
+    IChairRepository iChairRepository;
+
+//    public ChairService(IChairRepository iChairRepository) {
+//        this.iChairRepository = iChairRepository;
+//    }
 
     @Override
     public void chairOccuped(String[][] chairsCinema, int numbersChairs) {

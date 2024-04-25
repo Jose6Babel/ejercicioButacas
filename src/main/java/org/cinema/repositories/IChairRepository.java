@@ -1,4 +1,4 @@
 package org.cinema.repositories;
 
-public class ChairRepositories {
+public interface IChairRepository {
 }
