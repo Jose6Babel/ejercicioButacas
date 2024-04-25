@@ -9,6 +9,8 @@ public interface IChairService {
 
     String[][] chairInit();
 
+    int getChairsFreeInRow(String[][] chairsCinema);
+
     int menuOption(int minOption, int maxOption) throws IOException;
 
     String yesOrNoOption() throws IOException;

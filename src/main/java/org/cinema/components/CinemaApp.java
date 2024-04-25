@@ -56,7 +56,10 @@ public class CinemaApp {
     private void confirmOcupped(String[][] chairsCinema, int numChairs) throws IOException {
         printMessagesService.chooseReserved();
         String yesOrNo = chairService.yesOrNoOption();
-        if (yesOrNo.equalsIgnoreCase("s"))
+        if (yesOrNo.equalsIgnoreCase("s")) {
             chairService.chairOccuped(chairsCinema, numChairs);
+            int freeChairs = chairService.getChairsFreeInRow(chairsCinema);
+            printMessagesService.numChairsFree(freeChairs);
+        }
     }
 }

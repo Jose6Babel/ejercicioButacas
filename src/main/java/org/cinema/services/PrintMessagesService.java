@@ -11,6 +11,7 @@ public class PrintMessagesService implements IPrintMessagesService {
 
     @Override
     public void menu() {
+        System.out.println("-----------------------------");
         System.out.println("Que desea hacer?");
         System.out.println("1.-Reservar butaca\n" +
                 "2.- Ver estado del cine.\n" +

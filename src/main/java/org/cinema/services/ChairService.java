@@ -3,8 +3,6 @@ package org.cinema.services;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @Service
 public class ChairService implements IChairService {
@@ -16,16 +14,24 @@ public class ChairService implements IChairService {
     public void chairOccuped(String[][] chairsCinema, int numbersChairs) {
         fillChairs(chairsCinema, numbersChairs, false);
     }
+
     @Override
     public String[][] chairReserved(String[][] chairsCinema, int numbersChairs) {
-        String[][] chairsReserved;
-        chairsReserved = Arrays.stream(chairsCinema).collect(Collectors.toList()).toArray(new String[rows][columns]);
-
+        String[][] chairsReserved = new String[rows][columns];
+        copyArray(chairsCinema, chairsReserved);
         fillChairs(chairsReserved, numbersChairs, true);
         return chairsReserved;
     }
 
-    public int fillChairs(String[][] chairsCinema, int numbersChairs, boolean isReserved) {
+    public void copyArray(String[][] arrayOrigin, String[][] arrayCopy) {
+        for (int x = 0; x < arrayOrigin.length; x++) {
+            for (int y = 0; y < arrayOrigin[x].length; y++) {
+                arrayCopy[x][y] = arrayOrigin[x][y];
+            }
+        }
+    }
+
+    public void fillChairs(String[][] chairsCinema, int numbersChairs, boolean isReserved) {
         int indexHalfChair = findFreeChairs(chairsCinema, isReserved);
         int half = chairsCinema.length/2;
         boolean firstChair = isReserved ?
@@ -79,8 +85,6 @@ public class ChairService implements IChairService {
                 }
             }
         }
-
-        return getChairsFreeInRow(chairsCinema,indexHalfChair);
     }
 
     public int findFreeChairs(String[][] chairsCinema, boolean isReserved) {
@@ -88,7 +92,9 @@ public class ChairService implements IChairService {
         int numberRow = 1;
 
         for (int x = chairsCinema.length/2; x < chairsCinema.length;) {
-            // Me falta comprobar el tamaño max y min del array, para que no pete cuando esten todos reservados
+//            if (chairsCinema[0][0] != null &&
+//                chairsCinema[rows][columns] != null) {
+//            }
             if (!isReserved && chairsCinema[x][chairsCinema.length/2] == "R" ||
                     chairsCinema[x][chairsCinema.length/2] == null ||
                     chairsCinema[x][chairsCinema.length] == null ||
@@ -154,16 +160,35 @@ public class ChairService implements IChairService {
 
     }
 
-    public int getChairsFreeInRow(String[][] chairsCinema, int indexHalfChair) {
-        int chairsFree = 0;
+    @Override
+    public int getChairsFreeInRow(String[][] chairsCinema) {
+        boolean isLess = true;
+        int numberRow = 1;
+        int freeChairs = 0;
 
-        for (int x = 0; x < chairsCinema[indexHalfChair].length; x++) {
-            if (chairsCinema[indexHalfChair][x] == null) {
-                chairsFree++;
+        for (int x = chairsCinema.length/2; x < chairsCinema.length;) {
+            if (chairsCinema[x][0] == null || chairsCinema[x][chairsCinema.length] == null) {
+                for (int y = 0; y < chairsCinema[x].length; y++) {
+                    if (chairsCinema[x][y] == null) {
+                        freeChairs++;
+                    }
+                }
+                return freeChairs == 10 ? 0 : freeChairs;
+            }
+            else {
+                if (isLess) {
+                    x = chairsCinema.length/2 - numberRow;
+                    isLess = false;
+                }
+                else {
+                    x = chairsCinema.length/2 + numberRow;
+                    isLess = true;
+                    numberRow++;
+                }
             }
         }
 
-        return chairsFree;
+        return 0;
     }
 
     @Override
